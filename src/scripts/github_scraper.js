@@ -1,7 +1,6 @@
-import fs from 'fs'
 import puppeteer from "puppeteer"
 
-async function repo_scraper() {
+export async function repo_scraper() {
     // repos that we will ignore when building our list
     const ignore_repos = [
         'Migalha0',
@@ -44,35 +43,3 @@ async function repo_scraper() {
 
     return projects
 }
-
-async function generate_html_projects(){
-    console.log('initializing projects list creation');
-
-    const projects = await repo_scraper();
-    const project_cards_html = projects.map(project => `
-    
-        <div class="grid-content">
-
-            <a href="https://github.com/Migalha0/${project.title}" class="hyperlink left-box title">
-                ${project.title}
-            </a>
-
-            <p>
-                ${project.description}
-            </p>
-
-        </div>
-    `).join('\n');
-
-    const template_path = '../template.html';
-    let htmlContent = fs.readFileSync(template_path, 'utf-8');
-
-    const finished_path = '../../index.html'
-
-    htmlContent = htmlContent.replace('<!-- PROJECTS_LIST -->', project_cards_html);
-
-    fs.writeFileSync(finished_path, htmlContent, 'utf-8');
-    console.log('list generated');
-}
-
-generate_html_projects();

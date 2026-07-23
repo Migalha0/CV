@@ -15,12 +15,6 @@ document.querySelectorAll(".copy-btn").forEach(btn =>{
         try{
               await navigator.clipboard.writeText(text);
 
-                btn.classList.add("copied");
-
-                setTimeout(() => {
-                    btn.classList.remove("copied");
-                }, 300);
-
         } catch(error) {
             console.log("copy failed",error)
         }
