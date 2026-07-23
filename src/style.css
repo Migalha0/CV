@@ -139,9 +139,12 @@ body {
   padding: 2px 6px;
   border: 2px dashed black;
 
+  background-color: yellow;
+
+  /* Explicit 50% color stops prevent production minification rendering bugs */
   background-image:
-    linear-gradient(0deg, transparent 30%, rgba(0,0,0,0.12) 0%),
-    linear-gradient(90deg, rgba(0,0,0,0.12) 30%, transparent 0%);
+    linear-gradient(0deg, transparent 50%, rgba(0, 0, 0, 0.15) 50%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.15) 50%, transparent 50%);
 
   background-size: 2px 2px;
 }
@@ -151,7 +154,7 @@ body {
   min-width: 760px;
   max-width: 760px;
 
-  height:120px;
+  height: 120px;
   min-height: 120px;
   max-height: 120px;
 
@@ -162,8 +165,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  clip-path: 
-  polygon(0 100%, 0 40px, 40px 0, 100% 0, 100% 80px, 720px 100%);
+  clip-path: polygon(0 100%, 0 40px, 40px 0, 100% 0, 100% 80px, 720px 100%);
 }
 
 .name-card::before {
@@ -172,12 +174,17 @@ body {
   inset: 0;
 
   background-image:
-    linear-gradient(0deg, transparent 50%, yellow 0%),
-    linear-gradient(90deg, rgb(35, 37, 43) 50%, transparent 0%);
+    linear-gradient(0deg, transparent 50%, yellow 50%),
+    linear-gradient(90deg, rgb(35, 37, 43) 50%, transparent 50%);
 
   background-size: 2px 2px;
 
   mask-image: linear-gradient(
+    to bottom,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,0) 60%
+  );
+  -webkit-mask-image: linear-gradient(
     to bottom,
     rgba(0,0,0,1) 0%,
     rgba(0,0,0,0) 60%
@@ -297,15 +304,18 @@ body {
 }
 
 .square {
+  box-sizing: content-box;
   height: 28px;
   width: 11px;
   border: 2px solid rgb(35, 37, 43);
+  background-color: transparent;
 }
+
 .square.filled {
-  border: 2px solid rgb(35, 37, 43);
-  background-image:
-  linear-gradient(0deg, transparent 50%, yellow 0%),
-  linear-gradient(90deg, rgb(35, 37, 43) 50%, transparent 0%);
+  background-color: yellow;
+  background-image: 
+    linear-gradient(0deg, transparent 50%, yellow 50%),
+    linear-gradient(90deg, rgb(35, 37, 43) 50%, transparent 50%);
   background-size: 2px 2px;
 }
 
