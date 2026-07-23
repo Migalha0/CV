@@ -1,4 +1,8 @@
 import { level } from "./components/level";
+import { inject } from '@vercel/analytics';
+
+// Initialize Vercel Web Analytics
+inject();
 
 // LEVEL BAR
 document.querySelectorAll(".prof-scale").forEach(el => {
