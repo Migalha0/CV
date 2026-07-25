@@ -12,7 +12,14 @@ export async function repo_scraper() {
     const url = 'https://github.com/Migalha0?tab=repositories'
 
     // using puppeteer
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({
+        headless: 'new',
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage'
+        ]
+    });
 
     const page = await browser.newPage();
     await page.goto(url, {waitUntil: 'domcontentloaded'});

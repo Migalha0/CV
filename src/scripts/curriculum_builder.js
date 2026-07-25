@@ -1,8 +1,13 @@
 import fs from 'fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url';
 import { repo_scraper } from './github_scraper.js';
 
-const template_path = '../template.html';
-const finished_path = '../../index.html';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname  = path.dirname(__filename);
+
+const template_path = path.join(__dirname, '../template.html');
+const finished_path = path.join(__dirname, '../../index.html');
 
 async function generate_projects(html){
     console.log('   projects gen initializing...');
