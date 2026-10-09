@@ -1,3 +1,5 @@
+import type { Repository } from "../types/Repository";
+
 // const response = await fetch(
 //     'https://api.github.com/users/Migalha0/repos?per_page=100'
 // )
@@ -12,7 +14,7 @@
 //     console.log('---------------')
 // })
 
-export async function getRepos() {
+export async function getRepos(): Promise<Repository[]> {
     const response = await fetch(
         'https://api.github.com/users/Migalha0/repos?per_page=100'
     )
@@ -21,5 +23,8 @@ export async function getRepos() {
         throw new Error('Failed to fetch repositories')
     }
 
+    // const data = await response.json()
+    // console.log(data)
+    
     return response.json()
 }

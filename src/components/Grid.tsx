@@ -22,6 +22,7 @@ export default function Grid({
             <div
                 className={`
                     ${bgImage}
+                    pt-2 pb-8
                     grid
                     grid-cols-[repeat(auto-fit,minmax(min(335px,100%),1fr))]
                     gap-4
