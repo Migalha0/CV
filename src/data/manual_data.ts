@@ -23,12 +23,47 @@ const hobbies = [
 ]
 
 const professional_experience = [
-    {role: 'Front-end developer',company: 'Wipro', time: '01-2023 - 10-2025', stack: 'Javascript, React.js, Node.js, Storybook, Git'},
-    {role: 'Programming teacher',company: 'CNA', time: '01-2023 - 10-2025', stack: 'Javascript, React.js, Node.js, Storybook, Git'}
+    {role: 'Front-end developer',company: 'Wipro', time: '01-2023 : 10-2025', stack: 'Javascript, React.js, Node.js, Storybook, Git'},
+    {role: 'Programming teacher',company: 'CNA', time: '10-2025 : 06-2026', stack: 'Javascript, React.js, Node.js, Storybook, Git'}
 ]
 
 const excluded_repos = [
     'Migalha0'
+]
+
+const technical_skills = [
+    {
+        category: 'Development',
+        skills: [
+            'Frontend Development',
+            'React',
+            'HTML & CSS',
+            'Tailwind CSS',
+            'Node.js',
+            'Three.js',
+            'Git',
+        ]
+    },
+    {
+        category: 'AI & Data',
+        skills: [
+            'Large Language Models (LLMs)',
+            'Generative AI',
+            'Image Generation',
+            'Data Science',
+            'Data Visualization',
+            'Computer Vision'
+        ]
+    },
+    {
+        category: 'Other Technologies',
+        skills: [
+            'SQL',
+            '3D Modeling',
+            'Shader Programming',
+            'REST APIs'
+        ]
+    }
 ]
 
 export {
@@ -37,5 +72,6 @@ export {
     nationalities,
     hobbies,
     professional_experience,
-    excluded_repos
+    excluded_repos,
+    technical_skills
 }

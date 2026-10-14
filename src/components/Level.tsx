@@ -10,9 +10,9 @@ export default function Level({
     currentLevel
 }:Props) {
 
-    const square = `border-2 border-black h-[32px] w-[17px]`
+    const square = `border-2 border-border h-[32px] w-[17px]`
     const filledStyle = `
-        [background-image:linear-gradient(#ff0_50%,transparent_50%),linear-gradient(90deg,#23252b_50%,transparent_50%)]
+        [background-image:linear-gradient(#ff0_50%,transparent_50%),linear-gradient(90deg,#23252b_50%,transparent_50%)] dark:[background-image:linear-gradient(#23252b_50%,transparent_50%),linear-gradient(90deg,#ffffff_50%,transparent_50%)]
         [background-size:2px_2px]
     `
 

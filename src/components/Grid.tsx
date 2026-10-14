@@ -17,12 +17,12 @@ export default function Grid({
     `
     
     return(
-        <div className="border-l-4 border-brand-grey flex flex-col gap-2 pl-2 pr-4 pb-4 max-w-300">
+        <div className="border-l-4 border-border text-text flex flex-col gap-2 pl-2 pr-4 pb-4 max-w-300">
             <Title>{title}</Title>
             <div
                 className={`
                     ${bgImage}
-                    pt-2 pb-8
+                    pt-2 pb-8 pr-2.5 justify-items-center 
                     grid
                     grid-cols-[repeat(auto-fit,minmax(min(335px,100%),1fr))]
                     gap-4

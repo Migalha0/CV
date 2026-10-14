@@ -1,4 +1,4 @@
-import { coding_languages, hobbies, human_languages, nationalities } from "../data/manual_data"
+import { coding_languages, hobbies, human_languages, nationalities, technical_skills } from "../data/manual_data"
 import Box from "./Box"
 import Level from "./Level"
 import Sidebar from "./Sidebar"
@@ -33,6 +33,7 @@ export default function SideBar({
             flex
             fixed
             w-fit
+            max-w-120
             hide-scrollbar
 
             h-screen
@@ -112,6 +113,29 @@ export default function SideBar({
               ))}
             </div>
           </div>
+
+        <div>
+            <Title>TECHNICAL SKILLS</Title>
+
+            <div className="flex flex-col gap-4 pl-4 pt-5">
+                {technical_skills.map(category => (
+                    <div key={category.category}>
+                        <h3 className="font-semibold text-text mb-2">
+                            {category.category}
+                        </h3>
+
+                        <div className="flex flex-wrap gap-2">
+                            {category.skills.map(skill => (
+                                <Box key={skill}>
+                                    {skill}
+                                </Box>
+                            ))}
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+
           <div className="">
             <Title>NATIONALITIES</Title>
             <div className="flex flex-col gap-2 pl-4 pt-5">

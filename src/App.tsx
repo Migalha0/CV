@@ -4,8 +4,29 @@ import SectionProject from "./components/SectionProject.tsx"
 import { useEffect, useState } from "react"
 import SectionExperience from "./components/SectionExperience.tsx"
 import SectionSidebar from "./components/SectionSidebar.tsx"
+import type { Theme } from "./types/Theme.ts"
+import DarkButton from "./components/DarkButton.tsx"
 
 function App() {
+
+  const [theme, setTheme] = useState<Theme>(() => {
+    const savedTheme = localStorage.getItem("theme");
+
+    if(savedTheme === "light" || savedTheme === "dark") {
+      return savedTheme;
+    }
+
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
+
+  })
+
+  useEffect(() => {
+    document.documentElement.classList.toggle("dark", theme === "dark");
+
+    localStorage.setItem("theme", theme)
+  }, [theme])
 
   const [openSideBar, setOpenSideBar] = useState(true)
   const [dragStart, setDragStart] = useState<number | null>(null)
@@ -29,7 +50,8 @@ useEffect(() => {
 }, [openSideBar])
 
   return (
-    <div className="flex font-poppins text-brand-grey min-h-screen bg-white selection:bg-brand-grey selection:text-brand-yellow">
+    <div className="flex font-poppins text-brand-grey min-h-screen 
+    selection:bg-brand-grey dark:selection:bg-brand-yellow selection:text-brand-yellow dark:selection:text-brand-grey">
       
       <SectionSidebar
         open={openSideBar}
@@ -67,12 +89,16 @@ useEffect(() => {
             setDragStart(null)
         }}
 
-         className="flex flex-col gap-4 bg-white w-full md:pl-8 p-4"
+         className="flex flex-col gap-4 w-full md:pl-8 p-4 bg-surface"
         >
 
-        <NameCard>
-          Gabriel Magalhães Barros
-        </NameCard>
+        <div className="flex gap-8">
+          <NameCard>
+            Gabriel Magalhães Barros
+          </NameCard>
+
+          <DarkButton theme={theme} setTheme={setTheme}/>
+        </div>
 
         <SectionAbout/>
 
