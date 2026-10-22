@@ -5,35 +5,88 @@
 
 @theme {
   --font-poppins: 'Poppins', sans-serif;
-
-  --color-brand-yellow: #ff0;
-  --color-brand-grey: #23252b;
 }
 
+/* Light scheme */
 :root {
   color-scheme: light;
 
   /* Brand colors */
-  --brand-yellow: #ff0;
-  --brand-grey: #23252b;
+  --brand-yellow: #ffff00;
+  --brand-grey: #1f2126;
+  --brand-ink: #141518;
 
   /* Theme colors */
-  --theme-background: #ffffff;
+  --theme-background: #f5f5f2;
   --theme-surface: #ffffff;
-  --theme-text: var(--brand-grey);
-  --theme-border: var(--brand-grey);
-  --theme-shadow: var(--brand-grey);
-  --theme-pattern: #23252b26;
+  --theme-text: #1f2126;
+  --theme-border: #1f2126;
+  --theme-shadow: #1f2126;
+  --theme-pattern: rgb(31 33 38 / 0.15);
+  --theme-grid-pattern: rgb(0 0 0 / 0.15);
+  --theme-chip: rgb(0 0 0 / 0.15);
+  --theme-level-a: var(--brand-yellow);
+  --theme-level-b: var(--brand-grey);
+}
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/* Dark scheme */
+.dark {
+  color-scheme: dark;
 
-  font: 18px/145% var(--sans);
+  --theme-background: #121316;
+  --theme-surface: #1c1d22;
+  --theme-text: #ececee;
+  --theme-border: #e4e4e7;
+  --theme-shadow: #e4e4e7;
+  --theme-pattern: rgb(255 255 255 / 0.15);
+  --theme-grid-pattern: rgb(255 255 255 / 0.08);
+  --theme-chip: rgb(255 255 255 / 0.08);
+  --theme-level-a: var(--brand-grey);
+  --theme-level-b: #ffffff;
+}
+
+/* Tailwind utilities */
+@theme inline {
+  --color-brand-yellow: var(--brand-yellow);
+  --color-brand-grey: var(--brand-grey);
+  --color-ink: var(--brand-ink);
+
+  --color-background: var(--theme-background);
+  --color-surface: var(--theme-surface);
+  --color-text: var(--theme-text);
+  --color-border: var(--theme-border);
+  --color-pattern: var(--theme-pattern);
+  --color-grid-pattern: var(--theme-grid-pattern);
+  --color-chip: var(--theme-chip);
+
+  --shadow-hard: 12px 12px 0 0 var(--theme-shadow);
+}
+
+/* Pixel patterns, tinted through the --dots / --dither-a / --dither-b variables */
+@utility bg-dots {
+  background-image: radial-gradient(var(--dots, var(--theme-pattern)) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+
+@utility bg-dither {
+  background-image:
+    linear-gradient(var(--dither-a) 50%, transparent 50%),
+    linear-gradient(90deg, var(--dither-b) 50%, transparent 50%);
+  background-size: 2px 2px;
+}
+
+/* Quarter turn in visible steps, used when the theme icon swaps */
+@keyframes pixel-spin {
+  from { rotate: -90deg; }
+  to { rotate: 0deg; }
+}
+
+/* Global styles */
+:root {
+  font-family: var(--font-poppins);
+  font-size: 18px;
+  line-height: 145%;
   letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -44,52 +97,12 @@
   }
 }
 
-.dark {
-  color-scheme: dark;
-
-  --theme-background: #18191d;
-  --theme-surface: #23252b;
-  --theme-text: #f5f5f5;
-  --theme-border: #f5f5f5;
-  --theme-shadow: #f5f5f5;
-  --theme-pattern: #ffffff26;
-}
-
-/* Tailwind color utilities */
-@theme inline {
-    --color-brand-yellow: var(--brand-yellow);
-    --color-brand-grey: var(--brand-grey);
-
-    --color-background: var(--theme-background);
-    --color-surface: var(--theme-surface);
-    --color-text: var(--theme-text);
-    --color-border: var(--theme-border);
-}
-
-/* Global styles */
 html {
-    background-color: var(--theme-background);
-    color: var(--theme-text);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: transparent;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+  @media (prefers-reduced-motion: no-preference) {
+    scroll-behavior: smooth;
   }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+  background-color: var(--theme-background);
+  color: var(--theme-text);
 }
 
 #root {
@@ -103,58 +116,10 @@ html {
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-}
-
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
-}
-
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
-}
-
 .hide-scrollbar {
-    scrollbar-width: none;
+  scrollbar-width: none;
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-    display: none;
+  display: none;
 }

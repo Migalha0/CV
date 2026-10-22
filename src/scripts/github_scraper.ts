@@ -1,30 +1,31 @@
 import type { Repository } from "../types/Repository";
 
-// const response = await fetch(
-//     'https://api.github.com/users/Migalha0/repos?per_page=100'
-// )
+const REPOS_URL = "https://api.github.com/users/Migalha0/repos?per_page=100";
+const CACHE_KEY = "repos-cache";
 
-// const repos = await response.json()
-
-// // console.log(repos[2])
-
-// repos.forEach(repo => {
-//     console.log(`${repo.name} | ${repo.description} | ${repo.html_url} | ${repo.visibility} | ${repo.language}`
-//     )
-//     console.log('---------------')
-// })
-
+// Unauthenticated GitHub API calls are limited to 60/hour, so reuse the
+// response for the rest of the browser session
 export async function getRepos(): Promise<Repository[]> {
-    const response = await fetch(
-        'https://api.github.com/users/Migalha0/repos?per_page=100'
-    )
+  try {
+    const cached = sessionStorage.getItem(CACHE_KEY);
+    if (cached) return JSON.parse(cached);
+  } catch {
+    // Storage unavailable or corrupt, fall through to the network
+  }
 
-    if (!response.ok) {
-        throw new Error('Failed to fetch repositories')
-    }
+  const response = await fetch(REPOS_URL);
 
-    // const data = await response.json()
-    // console.log(data)
-    
-    return response.json()
+  if (!response.ok) {
+    throw new Error("Failed to fetch repositories");
+  }
+
+  const repos: Repository[] = await response.json();
+
+  try {
+    sessionStorage.setItem(CACHE_KEY, JSON.stringify(repos));
+  } catch {
+    // Caching is best effort
+  }
+
+  return repos;
 }

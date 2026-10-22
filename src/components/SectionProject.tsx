@@ -3,10 +3,41 @@ import { useEffect, useState } from "react";
 import Grid from "./Grid";
 import Card from "./Card";
 
-import { excluded_repos } from "../data/manual_data";
+import { excluded_repos, featured_repos, personal_info } from "../data/manual_data";
 import { getRepos } from "../scripts/github_scraper";
+import { extractTags } from "../scripts/parse_tags";
 
 import type { Repository } from "../types/Repository";
+
+// Featured repos first (in their listed order), then everything else by last push
+function sortRepos(repos: Repository[]): Repository[] {
+  const rank = (repo: Repository) => {
+    const index = featured_repos.indexOf(repo.name);
+    return index === -1 ? featured_repos.length : index;
+  };
+
+  return repos
+    .filter((repo) => !repo.fork && !excluded_repos.includes(repo.name))
+    .sort((a, b) => rank(a) - rank(b) || b.pushed_at.localeCompare(a.pushed_at));
+}
+
+function SkeletonCard() {
+  return (
+    <div
+      aria-hidden="true"
+      className="
+        flex flex-col gap-3 w-full h-48 p-3
+        bg-surface border-3 border-border shadow-hard
+        bg-dots
+        animate-pulse motion-reduce:animate-none
+      "
+    >
+      <div className="h-6 w-2/3 bg-border" />
+      <div className="h-3 w-full bg-chip" />
+      <div className="h-3 w-5/6 bg-chip" />
+    </div>
+  );
+}
 
 export default function SectionProject() {
   const [repos, setRepos] = useState<Repository[]>([]);
@@ -21,7 +52,7 @@ export default function SectionProject() {
         const data = await getRepos();
 
         if (!cancelled) {
-          setRepos(data);
+          setRepos(sortRepos(data));
         }
       } catch {
         if (!cancelled) {
@@ -42,25 +73,47 @@ export default function SectionProject() {
   }, []);
 
   if (loading) {
-    return <Grid title="PROJECTS">Loading projects...</Grid>;
+    return (
+      <Grid id="projects" title="PROJECTS">
+        <span className="sr-only">Loading projects…</span>
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
+      </Grid>
+    );
   }
 
   if (error) {
-    return <Grid title="PROJECTS">{error}</Grid>;
+    return (
+      <Grid id="projects" title="PROJECTS">
+        <div className="flex flex-col gap-2 items-start text-left border-2 border-border p-3 bg-surface shadow-hard">
+          <span className="font-bold">{error}</span>
+          <a href={personal_info.github} target="_blank" rel="noopener noreferrer" className="underline">
+            See my projects directly on GitHub ↗
+          </a>
+        </div>
+      </Grid>
+    );
   }
 
   return (
-    <Grid title="PROJECTS">
-      {repos
-        .filter((repo) => !excluded_repos.includes(repo.name))
-        .map((repo) => (
+    <Grid id="projects" title="PROJECTS">
+      {repos.map((repo) => {
+        const { text, tags } = extractTags(repo.description ?? "");
+
+        return (
           <Card
             key={repo.id}
             url={repo.html_url}
+            repo={repo.name}
+            homepage={repo.homepage}
+            language={repo.language}
             title_string={repo.name}
-            description={repo.description ?? ""}
+            description={text}
+            tags={tags}
           />
-        ))}
+        );
+      })}
     </Grid>
   );
 }

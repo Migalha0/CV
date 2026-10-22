@@ -11,14 +11,11 @@ export default function Level({
 }:Props) {
 
     const square = `border-2 border-border h-[32px] w-[17px]`
-    const filledStyle = `
-        [background-image:linear-gradient(#ff0_50%,transparent_50%),linear-gradient(90deg,#23252b_50%,transparent_50%)] dark:[background-image:linear-gradient(#23252b_50%,transparent_50%),linear-gradient(90deg,#ffffff_50%,transparent_50%)]
-        [background-size:2px_2px]
-    `
+    const filledStyle = `bg-dither [--dither-a:var(--theme-level-a)] [--dither-b:var(--theme-level-b)]`
 
     return(
         <div className="flex gap-1 items-center">
-            <div className="flex gap-0.5">
+            <div className="flex gap-0.5" role="img" aria-label={`${title}: ${currentLevel} of ${maxLevel}`}>
 
                 {Array.from({length: maxLevel}, (_,index) => {
                     const filled = index < currentLevel

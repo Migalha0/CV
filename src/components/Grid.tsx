@@ -1,36 +1,27 @@
-import type { ReactNode } from "react"
-import Title from "./Title"
+import type { ReactNode } from "react";
+import Title from "./Title";
 
-interface Props{
-    title: string,
-    children: ReactNode
+interface Props {
+  id: string;
+  title: string;
+  children: ReactNode;
 }
 
-export default function Grid({
-    title,
-    children
-}: Props) {
-
-        const bgImage = `
-        [background-image:radial-gradient(#00000026_1px,transparent_1px)]
-        [background-size:7px_7px]
-    `
-    
-    return(
-        <div className="border-l-4 border-border text-text flex flex-col gap-2 pl-2 pr-4 pb-4 max-w-300">
-            <Title>{title}</Title>
-            <div
-                className={`
-                    ${bgImage}
-                    pt-2 pb-8 pr-2.5 justify-items-center 
+export default function Grid({ id, title, children }: Props) {
+  return (
+    <section id={id} className="scroll-mt-4 border-l-4 border-border text-text flex flex-col gap-2 pl-2 pr-4 pb-4">
+      <Title as="h2">{title}</Title>
+      <div
+        className={`
+                    bg-dots [--dots:var(--theme-grid-pattern)]
+                    pt-2 pb-8 pr-2.5 items-start
                     grid
-                    grid-cols-[repeat(auto-fit,minmax(min(335px,100%),1fr))]
-                    gap-4
-                    `
-                }
-            >
-                {children}
-            </div>
-        </div>
-    )
+                    grid-cols-[repeat(auto-fill,minmax(min(300px,100%),1fr))]
+                    gap-6
+                    `}
+      >
+        {children}
+      </div>
+    </section>
+  );
 }

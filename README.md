@@ -1,75 +1,35 @@
-# React + TypeScript + Vite
+# Gabriel Magalhães Barros — Portfolio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**Live:** https://cv-eight-pi.vercel.app
 
-Currently, two official plugins are available:
+My CV and portfolio as a single-page site, built from scratch with React, TypeScript, Tailwind CSS and hand-written WebGL. The design is deliberately sharp and "pixel perfect": hard offset shadows, 2px dithered patterns and clipped corners. There is no UI library.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Projects pulled live from GitHub.** Repositories are fetched from the GitHub API on load. Forks and excluded repos are skipped, and the rest are sorted by featured order, then by last push. Responses are cached per session to stay under the unauthenticated rate limit.
+- **`#tags` in repo descriptions.** Words starting with `#` in a repo description (e.g. `#AI`) are removed from the text and shown as tag chips. `C#`-style words are left alone.
+- **Shader-framed AI projects.** Cards tagged `#AI` get an animated GLSL frame that shows through the card border and hard shadow. It only animates while on screen and respects `prefers-reduced-motion`.
+- **Image previews.** If a repo has a `preview.{jpg,png,jpeg,webp,gif}` file in its root, the card shows it on hover, or on tap or keyboard toggle.
+- **Live demo links.** A repo's GitHub "Website" field shows up as a **LIVE DEMO** button.
+- **Dark mode.** It follows the system setting, can be toggled, and is remembered. The theme is applied before first paint, so there is no flash.
+- **Responsive.** On phones the sidebar becomes a swipeable drawer.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Stack
 
-## Expanding the ESLint configuration
+React 19 · TypeScript · Tailwind CSS 4 · Vite · WebGL (GLSL) · Vercel
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Running locally
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev      # dev server
+npm run build    # type-check + production build
+npm run lint
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Editing content
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
-```
+- Personal info, skills, languages and experience: [`src/data/manual_data.ts`](src/data/manual_data.ts)
+- Pin projects to the top: add repo names to `featured_repos` in the same file.
+- Hide a repo: add it to `excluded_repos`.
+- Downloadable CV: place the PDF at `public/cv.pdf`.

@@ -4,7 +4,43 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cv_react</title>
+    <title>GMagellan Full-Stack Dev</title>
+    <meta
+      name="description"
+      content="Portfolio of Gabriel Magalhães Barros, full-stack developer specializing in JavaScript and Python. Projects in web, 3D, data visualization and AI."
+    />
+    <meta name="theme-color" content="#ffff00" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cv-eight-pi.vercel.app" />
+    <meta
+      property="og:title"
+      content="Gabriel Magalhães Barros — Full-Stack Developer"
+    />
+    <meta
+      property="og:description"
+      content="JavaScript & Python developer. Projects in web, 3D, data visualization and AI."
+    />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="Gabriel Magalhães Barros — Full-Stack Developer"
+    />
+    <meta
+      name="twitter:description"
+      content="JavaScript & Python developer. Projects in web, 3D, data visualization and AI."
+    />
+
+    <!-- Apply the theme before first paint so dark mode doesn't flash light -->
+    <script>
+      try {
+        var saved = localStorage.getItem("theme");
+        var dark = saved
+          ? saved === "dark"
+          : matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle("dark", dark);
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
