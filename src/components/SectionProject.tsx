@@ -1,3 +1,4 @@
+import Icon from "./Icon";
 import { useEffect, useState } from "react";
 
 import Grid from "./Grid";
@@ -19,6 +20,11 @@ function sortRepos(repos: Repository[]): Repository[] {
   return repos
     .filter((repo) => !repo.fork && !excluded_repos.includes(repo.name))
     .sort((a, b) => rank(a) - rank(b) || b.pushed_at.localeCompare(a.pushed_at));
+}
+
+// "UK_Crime_Map" -> "UK Crime Map"
+function displayName(name: string) {
+  return name.replace(/[_-]+/g, " ").trim();
 }
 
 function SkeletonCard() {
@@ -74,8 +80,8 @@ export default function SectionProject() {
 
   if (loading) {
     return (
-      <Grid id="projects" title="PROJECTS">
-        <span className="sr-only">Loading projects…</span>
+      <Grid id="projects" title="PROJECTS" busy>
+        <span role="status" className="sr-only">Loading projects…</span>
         <SkeletonCard />
         <SkeletonCard />
         <SkeletonCard />
@@ -89,7 +95,8 @@ export default function SectionProject() {
         <div className="flex flex-col gap-2 items-start text-left border-2 border-border p-3 bg-surface shadow-hard">
           <span className="font-bold">{error}</span>
           <a href={personal_info.github} target="_blank" rel="noopener noreferrer" className="underline">
-            See my projects directly on GitHub ↗
+            See my projects directly on GitHub <Icon name="external" />
+            <span className="sr-only"> (opens in a new tab)</span>
           </a>
         </div>
       </Grid>
@@ -108,7 +115,7 @@ export default function SectionProject() {
             repo={repo.name}
             homepage={repo.homepage}
             language={repo.language}
-            title_string={repo.name}
+            title_string={displayName(repo.name)}
             description={text}
             tags={tags}
           />

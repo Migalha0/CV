@@ -1,4 +1,5 @@
 import type { ReactNode } from "react"
+import FireDither from "./FireDither"
 
 interface Props {
     name: string
@@ -17,20 +18,16 @@ export default function NameCard({ name, headline, children }: Props) {
                 p-4 py-6
 
                 [clip-path:polygon(0_100%,0_40px,40px_0,100%_0,100%_calc(100%_-_40px),calc(100%_-_40px)_100%)]
-
-                before:content-['']
-                before:absolute
-                before:inset-0
-                before:z-0
-                before:pointer-events-none
-
-                before:bg-dither
-                before:[--dither-a:var(--brand-yellow)]
-                before:[--dither-b:var(--brand-grey)]
-
-                before:[mask-image:linear-gradient(#000_-50%,#0000_80%)]
             "
         >
+            {/* Grey pixel flames licking down from the top edge */}
+            <FireDither
+                direction="down"
+                reach={1}
+                heat={0.7}
+                cell={1}
+                className="text-brand-grey [mask-image:linear-gradient(#000,#0000_60%)]"
+            />
             <h1 className="relative z-10 text-3xl font-semibold text-ink">
                 {name}
             </h1>

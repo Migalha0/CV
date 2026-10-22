@@ -44,7 +44,7 @@ const professional_experience = [
         role: 'Front-end developer',
         company: 'Wipro',
         time: '01-2023 : 10-2025',
-        stack: 'Javascript, React.js, Node.js, Storybook, Git',
+        stack: 'JavaScript, React.js, Node.js, Storybook, Git',
         summary: 'Front-end development for the Detran-PE (Pernambuco State Department of Transit) website, a public service used by over 2.6 million licensed drivers in the state. Led accessibility work that brought the site in line with web accessibility standards, earning the Web Accessibility Seal 2025-SAD/001 and recognition at a national award.'
     }
 ]

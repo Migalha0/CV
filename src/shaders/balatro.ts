@@ -2,7 +2,12 @@
 // Ported from Shadertoy to GLSL ES 1.00 (WebGL 1)
 
 export const balatroFragment = `
+// mediump is 16-bit on mobile GPUs, which flattens the swirl to solid blue
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
 precision mediump float;
+#endif
 
 uniform float iTime;
 uniform vec2 iResolution;

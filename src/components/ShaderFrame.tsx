@@ -21,6 +21,9 @@ const CLIP_PATH = `polygon(
     0 calc(100% - ${SHADOW}px)
 )`;
 
+// COLOUR_1..3 from the balatro shader
+const FALLBACK = "conic-gradient(from 45deg, #ffff00, #006bb4, #162325, #006bb4, #ffff00)";
+
 const VERTEX = `
 attribute vec2 position;
 void main() {
@@ -47,8 +50,11 @@ export default function ShaderFrame({ children }: Props) {
     const canvas = canvasRef.current;
     const gl = canvas?.getContext("webgl");
 
-    // No WebGL: the canvas' bg-border class acts as a plain frame
-    if (!canvas || !gl) return;
+    // No WebGL: the canvas' CSS gradient (shader palette) stays as a static frame
+    if (!canvas || !gl) {
+      console.warn("ShaderFrame: WebGL unavailable, using plain frame");
+      return;
+    }
 
     const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX);
     const fragment = compile(gl, gl.FRAGMENT_SHADER, balatroFragment);
@@ -136,8 +142,8 @@ export default function ShaderFrame({ children }: Props) {
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className="absolute top-0 left-0 w-[calc(100%+12px)] h-[calc(100%+12px)] bg-border"
-        style={{ clipPath: CLIP_PATH }}
+        className="absolute top-0 left-0 w-[calc(100%+12px)] h-[calc(100%+12px)]"
+        style={{ clipPath: CLIP_PATH, background: FALLBACK }}
       />
       <div className="relative">{children}</div>
     </div>

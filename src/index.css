@@ -75,6 +75,26 @@
   background-size: 2px 2px;
 }
 
+/* Square 2px dots drawn in the border area. border-style: dotted is avoided
+   because Firefox draws round dots and Chromium draws square ones */
+@utility dotted-b {
+  border-bottom-color: transparent;
+  background-image: linear-gradient(90deg, currentColor 50%, transparent 50%);
+  background-size: 4px 2px;
+  background-repeat: repeat-x;
+  background-position: left bottom;
+  background-origin: border-box;
+}
+
+@utility dotted-l {
+  border-left-color: transparent;
+  background-image: linear-gradient(var(--theme-border) 50%, transparent 50%);
+  background-size: 2px 4px;
+  background-repeat: repeat-y;
+  background-position: left top;
+  background-origin: border-box;
+}
+
 /* Quarter turn in visible steps, used when the theme icon swaps */
 @keyframes pixel-spin {
   from { rotate: -90deg; }
@@ -114,6 +134,27 @@ html {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+}
+
+/* Visible keyboard focus everywhere (WCAG 2.4.7); components on yellow or
+   inverted surfaces override the color so it always contrasts. In the base
+   layer so those utility overrides win */
+@layer base {
+  :focus-visible {
+    outline: 3px solid var(--theme-text);
+    outline-offset: 2px;
+  }
+}
+
+/* Honor the OS "reduce motion" setting across every transition and animation */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 .hide-scrollbar {

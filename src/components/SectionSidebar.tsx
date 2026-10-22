@@ -1,40 +1,113 @@
-import { coding_languages, hobbies, human_languages, nationalities, technical_skills } from "../data/manual_data"
-import Chip from "./Chip"
-import Level from "./Level"
-import Title from "./Title"
-import { useRef } from "react"
-import useSwipeDrawer from "../hooks/useSwipeDrawer"
+import {
+  coding_languages,
+  hobbies,
+  human_languages,
+  nationalities,
+  technical_skills,
+} from "../data/manual_data";
+import Chip from "./Chip";
+import Icon from "./Icon";
+import Level from "./Level";
+import Title from "./Title";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import useSwipeDrawer from "../hooks/useSwipeDrawer";
 
-interface Props{
-    open: boolean;
-    setOpen: (open: boolean) => void;
+const MOBILE_QUERY = "(max-width: 767px)";
+
+interface Props {
+  open: boolean;
+  setOpen: (open: boolean) => void;
 }
 
-export default function SideBar({
-    open,
-    setOpen,
-}: Props){
-    const drawerRef = useRef<HTMLDivElement>(null)
-    const backdropRef = useRef<HTMLDivElement>(null)
+// Shared heading + indented body, so every sidebar block is spaced the same
+function Block({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="flex flex-col gap-3">
+      <Title as="h2">{title}</Title>
+      <div className="pl-2">{children}</div>
+    </section>
+  );
+}
 
-    useSwipeDrawer({ open, setOpen, drawerRef, backdropRef })
+function ChipList({ items }: { items: string[] }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {items.map((item) => (
+        <Chip key={item}>{item}</Chip>
+      ))}
+    </div>
+  );
+}
 
-    return(
-        <>
-        {/* Dithered screen behind the open drawer on phones; tap to close */}
-        <div
-            ref={backdropRef}
-            aria-hidden="true"
-            onClick={() => setOpen(false)}
-            className={`
+function LevelList({
+  items,
+}: {
+  items: { name: string; proficiency: number }[];
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      {items.map((item) => (
+        <Level
+          key={item.name}
+          title={item.name}
+          currentLevel={item.proficiency}
+          maxLevel={5}
+        />
+      ))}
+    </div>
+  );
+}
+
+export default function SideBar({ open, setOpen }: Props) {
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+
+  const tabRef = useRef<HTMLButtonElement>(null);
+
+  useSwipeDrawer({ open, setOpen, drawerRef, backdropRef });
+
+  // Only phones have a drawer; on wider screens the panel is always shown
+  const [mobile, setMobile] = useState(
+    () => window.matchMedia(MOBILE_QUERY).matches,
+  );
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(MOBILE_QUERY);
+    const update = () => setMobile(mediaQuery.matches);
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, []);
+
+  const drawerOpen = mobile && open;
+  const drawerClosed = mobile && !open;
+
+  // Escape closes the open drawer and hands focus back to its tab
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      setOpen(false);
+      tabRef.current?.focus();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [drawerOpen, setOpen]);
+
+  return (
+    <>
+      {/* Dithered screen behind the open drawer on phones; tap to close */}
+      <div
+        ref={backdropRef}
+        aria-hidden="true"
+        onClick={() => setOpen(false)}
+        className={`
                 md:hidden fixed inset-0 z-10
                 bg-dither [--dither-a:rgb(20_21_24/0.6)] [--dither-b:rgb(20_21_24/0.6)]
                 transition-[opacity,visibility] duration-200
-                ${open ? 'opacity-100 visible' : 'opacity-0 invisible'}
+                ${open ? "opacity-100 visible" : "opacity-0 invisible"}
             `}
-        />
+      />
 
-        <div 
+      <div
         ref={drawerRef}
         className={`
             z-20
@@ -43,99 +116,108 @@ export default function SideBar({
             w-fit
             hide-scrollbar
 
-            h-screen
+            h-dvh
             md:h-auto
-            
+
             transition-transform
             duration-200
             ease-out
-            ${open ? 'translate-x-0' : 'translate-x-[calc(-100%+40px)]'}
+            ${open ? "translate-x-0" : "translate-x-[calc(-100%+40px)]"}
             md:translate-x-0
             md:relative
-        `}>
-        
-        <div className={`md:w-80 xl:w-96 w-[90vw] h-full`}>
-          <div className="w-full h-full overflow-y-auto p-6 xl:p-8 bg-brand-yellow dark:bg-brand-grey border-r-2 border-border dark:border-brand-yellow text-text">
-          <div className="">
-            <Title as="h2">CODING LANGUAGES</Title>
-            <div className="flex flex-col gap-2 pl-4 pt-5">
-              {coding_languages.map(language => (
-                <Level
-                key={language.name}
-                title={language.name}
-                currentLevel={language.proficiency}
-                maxLevel={5}
-                />
-              ))}
-            </div>
-          </div>
-          <div className="">
-            <Title as="h2">LANGUAGES</Title>
-            <div className="flex flex-col gap-2 pl-4 pt-5">
-              {human_languages.map(language => (
-                <Level
-                  key={language.name}
-                  title={language.name}
-                  currentLevel={language.proficiency}
-                  maxLevel={5}
-                  />
-              ))}
-            </div>
-          </div>
 
-        <div>
-            <Title as="h2">TECHNICAL SKILLS</Title>
+            pointer-events-none
+            md:pointer-events-auto
+        `}
+      >
+        {/* The wrapper is full height, so the strip under the tab would swallow
+            taps meant for the backdrop or page; only the panel and tab take them */}
+        {/* inert while the drawer is shut, so keyboard and screen readers
+            skip the off-screen panel */}
+        <aside
+          id="sidebar"
+          aria-label="Skills and profile"
+          inert={drawerClosed}
+          className={`md:w-80 xl:w-96 w-[90vw] h-full pointer-events-auto`}
+        >
+          {/* Focusable so keyboard users can scroll it; it has no links */}
+          <div
+            tabIndex={0}
+            className="
+            focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ink dark:focus-visible:outline-brand-yellow
+            flex flex-col gap-8
+            w-full h-full overflow-y-auto
+            p-6 xl:p-8
+            bg-brand-yellow dark:bg-brand-grey
+            border-r-2 border-border dark:border-brand-yellow
+            text-text text-left
+          "
+          >
+            <Block title="CODING LANGUAGES">
+              <LevelList items={coding_languages} />
+            </Block>
 
-            <div className="flex flex-col gap-4 pl-4 pt-5">
-                {technical_skills.map(category => (
-                    <div key={category.category}>
-                        <h3 className="font-semibold text-text text-left mb-2">
-                            {category.category}
-                        </h3>
+            <Block title="LANGUAGES">
+              <LevelList items={human_languages} />
+            </Block>
 
-                        <div className="flex flex-wrap gap-2">
-                            {category.skills.map(skill => (
-                                <Chip key={skill}>
-                                    {skill}
-                                </Chip>
-                            ))}
-                        </div>
-                    </div>
+            <Block title="TECHNICAL SKILLS">
+              <div className="flex flex-col gap-4">
+                {technical_skills.map((category) => (
+                  <div key={category.category} className="flex flex-col gap-2">
+                    <h3 className="text-sm font-semibold">
+                      {category.category}
+                    </h3>
+                    <ChipList items={category.skills} />
+                  </div>
                 ))}
-            </div>
-        </div>
+              </div>
+            </Block>
 
-          <div className="">
-            <Title as="h2">NATIONALITIES</Title>
-            <div className="flex flex-col gap-2 pl-4 pt-5">
-              {nationalities.map(nationality => (
-                <Chip key={nationality.name}>{nationality.name}</Chip>
-              ))}
-            </div>
+            <Block title="NATIONALITIES">
+              <ChipList
+                items={nationalities.map((nationality) => nationality.name)}
+              />
+            </Block>
+
+            <Block title="INTERESTS">
+              <ChipList items={hobbies.map((hobby) => hobby.name)} />
+            </Block>
           </div>
-          <div className="">
-            <Title as="h2">INTERESTS</Title>
-            <div className="flex flex-col gap-2 pl-4 pt-5">
-              {hobbies.map(hobby => (
-                <Chip key={hobby.name}>{hobby.name}</Chip>
-              ))}
-            </div>
-          </div>
-          </div>
-        </div>
-        
-        <button 
+        </aside>
+
+        {/* Labeled pull tab: the drawer holds profile details, not site
+            navigation, so a hamburger icon would promise the wrong thing */}
+        <button
+          ref={tabRef}
           type="button"
           onClick={() => setOpen(!open)}
-          aria-label={open ? "Close sidebar" : "Open sidebar"}
+          aria-controls="sidebar"
           aria-expanded={open}
-          className={`md:hidden w-10 h-10 bg-brand-yellow hover:cursor-pointer text-3xl border-2 border-ink flex items-center justify-center`}>
-          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
-            <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5m0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5"/>
-          </svg>
+          className="
+            md:hidden self-start mt-4
+            pointer-events-auto
+            flex flex-col items-center gap-2
+            w-10 py-3
+            bg-brand-yellow text-ink border-ink
+            dark:bg-brand-grey dark:text-brand-yellow dark:border-brand-yellow
+            border-2 border-l-0
+            shadow-[3px_3px_0_0_var(--brand-ink)]
+            text-xs font-bold tracking-widest
+            hover:cursor-pointer
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border
+          "
+        >
+          <Icon
+            name="chevron"
+            className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+          />
+          <span className="[writing-mode:vertical-rl]">
+            {open ? "CLOSE" : "SKILLS"}
+          </span>
+          <span className="sr-only"> panel</span>
         </button>
-
       </div>
-      </>
-    )
+    </>
+  );
 }

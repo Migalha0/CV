@@ -1,3 +1,5 @@
+import Icon from "./components/Icon.tsx";
+import DotField from "./components/DotField.tsx";
 import NameCard from "./components/NameCard";
 import SectionAbout from "./components/SectionAbout.tsx";
 import SectionProject from "./components/SectionProject.tsx";
@@ -14,7 +16,13 @@ import { personal_info } from "./data/manual_data.ts";
 
 function App() {
   const [theme, setTheme] = useState<Theme>(() => {
-    const savedTheme = localStorage.getItem("theme");
+    // Storage can be blocked (strict privacy modes), which throws on access
+    let savedTheme = null;
+    try {
+      savedTheme = localStorage.getItem("theme");
+    } catch {
+      // Falls back to the system preference
+    }
 
     if (savedTheme === "light" || savedTheme === "dark") {
       return savedTheme;
@@ -28,7 +36,11 @@ function App() {
   useEffect(() => {
     document.documentElement.classList.toggle("dark", theme === "dark");
 
-    localStorage.setItem("theme", theme);
+    try {
+      localStorage.setItem("theme", theme);
+    } catch {
+      // The choice just won't persist across visits
+    }
   }, [theme]);
 
   // Start closed on phones so the first screen is the name card, not the sidebar
@@ -60,10 +72,28 @@ function App() {
     touch-pan-y touch-pinch-zoom md:touch-auto
     selection:bg-brand-grey dark:selection:bg-brand-yellow selection:text-brand-yellow dark:selection:text-brand-grey"
     >
+      {/* First focusable element, so keyboard users can jump past the sidebar */}
+      <a
+        href="#content"
+        className="
+          sr-only focus:not-sr-only
+          focus:fixed focus:top-4 focus:left-4 focus:z-50
+          focus:px-3 focus:py-2
+          focus:bg-ink focus:text-brand-yellow focus:font-bold
+          focus:outline-2 focus:outline-offset-2 focus:outline-brand-yellow
+        "
+      >
+        Skip to content
+      </a>
+
       <SectionSidebar open={openSideBar} setOpen={setOpenSideBar} />
 
-      <main className="flex flex-col w-full md:pl-8 p-4 bg-surface">
-        <div className="flex gap-12 flex-1">
+      <div className="flex flex-col w-full p-4 pl-14 md:pl-8 bg-surface">
+        <main
+          id="content"
+          tabIndex={-1}
+          className="flex gap-12 flex-1 scroll-mt-4 focus:outline-none"
+        >
           <div className="flex flex-col gap-4 flex-1 min-w-0">
             <div className="flex gap-4 md:gap-8">
               <NameCard
@@ -86,10 +116,10 @@ function App() {
                   />
                 </span>
                 <LinkButton variant="brand" href={personal_info.github}>
-                  GITHUB ↗
+                  GITHUB <Icon name="external" />
                 </LinkButton>
                 <LinkButton variant="brand" href={personal_info.linkedin}>
-                  LINKEDIN ↗
+                  LINKEDIN <Icon name="external" />
                 </LinkButton>
                 <LinkButton
                   variant="brand"
@@ -97,28 +127,30 @@ function App() {
                   title={personal_info.phone}
                   label={`Call ${personal_info.phone}`}
                 >
-                  CALL
+                  CALL <Icon name="phone" />
                 </LinkButton>
                 <LinkButton variant="brand" href={personal_info.cv} download>
-                  DOWNLOAD CV ↓
+                  DOWNLOAD CV <Icon name="download" />
                 </LinkButton>
               </NameCard>
 
               <DarkButton theme={theme} setTheme={setTheme} />
             </div>
 
-            <SectionAbout />
+            <DotField>
+              <SectionAbout />
 
-            <SectionProject />
+              <SectionExperience />
 
-            <SectionExperience />
+              <SectionProject />
+            </DotField>
           </div>
 
           <RightRail />
-        </div>
+        </main>
 
         <Footer />
-      </main>
+      </div>
     </div>
   );
 }

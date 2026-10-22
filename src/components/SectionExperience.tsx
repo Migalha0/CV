@@ -22,20 +22,16 @@ export default function SectionExperience() {
         <Card
           key={`${job.company}-${job.role}`}
           title_string={job.role}
-          description={
-            <div className="flex flex-col gap-2">
-              <p>{job.summary}</p>
-              <p>
-                <strong>Company:</strong> {job.company}
-              </p>
-              <p>
-                <strong>Time:</strong> {formatPeriod(job.time)}
-              </p>
-              <p>
-                <strong>Stack:</strong> {job.stack}
-              </p>
-            </div>
+          meta={
+            <>
+              {job.company}
+              <span aria-hidden="true"> · </span>
+              <span className="sr-only">, </span>
+              <span className="font-normal">{formatPeriod(job.time)}</span>
+            </>
           }
+          description={job.summary}
+          chips={job.stack.split(",").map((tech) => tech.trim())}
         />
       ))}
     </Grid>

@@ -14,7 +14,7 @@ export default function Level({
     const filledStyle = `bg-dither [--dither-a:var(--theme-level-a)] [--dither-b:var(--theme-level-b)]`
 
     return(
-        <div className="flex gap-1 items-center">
+        <div className="flex gap-2.5 items-center">
             <div className="flex gap-0.5" role="img" aria-label={`${title}: ${currentLevel} of ${maxLevel}`}>
 
                 {Array.from({length: maxLevel}, (_,index) => {

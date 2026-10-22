@@ -1,45 +1,42 @@
-import type { ReactNode } from "react"
+import type { ReactNode } from "react";
 
-interface Props{
-    url?: string,
-    line?: boolean,
-    as?: "h1" | "h2" | "h3" | "div",
-    children: ReactNode
+interface Props {
+  url?: string;
+  line?: boolean;
+  as?: "h1" | "h2" | "h3" | "div";
+  id?: string;
+  children: ReactNode;
 }
 
 export default function Title({
-    url,
-    line=true,
-    as: Tag = "div",
-    children
+  url,
+  line = true,
+  as: Tag = "div",
+  id,
+  children,
 }: Props) {
+  const urlStyle =
+    "block text-ink bg-brand-yellow hover:bg-ink hover:text-brand-yellow hover:border-brand-grey dark:hover:border-transparent underline underline-offset-2 p-1 focus-visible:outline-ink dark:focus-visible:outline-brand-yellow";
+  const nonUrlStyle = "text-text";
 
-    const hasUrl = url !== undefined
+  const lineStyle = line ? "border-b-2 p-1 pb-0 dark:dotted-b" : "";
 
-    const urlStyle =
-        'text-ink bg-brand-yellow hover:bg-ink hover:text-brand-yellow hover:border-brand-grey underline p-1'
-    const nonUrlStyle =
-        'text-text'
-
-    const finalStyle = `
-                            font-bold text-left
-                            ${line ? 'border-b-2 p-1 pb-0 dark:border-dotted' : ''}
-                            ${hasUrl ? urlStyle : nonUrlStyle}
-                        `
-    return(
-        url ? (
-            <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={finalStyle}
-            >
-                {children}
-            </a>
-        ) : (
-            <Tag className={`${finalStyle}`}>
-                {children}
-            </Tag>
-        )
-    )
+  // A linked title stays a heading for screen readers, with the link inside
+  return url ? (
+    <Tag id={id} className="font-bold text-left">
+      <a
+        href={url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`${lineStyle} ${urlStyle}`}
+      >
+        {children}
+        <span className="sr-only"> (opens in a new tab)</span>
+      </a>
+    </Tag>
+  ) : (
+    <Tag id={id} className={`font-bold text-left ${lineStyle} ${nonUrlStyle}`}>
+      {children}
+    </Tag>
+  );
 }

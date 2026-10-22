@@ -31,6 +31,7 @@ export default function LinkButton({
       className={buttonClasses(variant)}
     >
       {children}
+      {external && <span className="sr-only"> (opens in a new tab)</span>}
     </a>
   );
 }

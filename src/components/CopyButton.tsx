@@ -18,6 +18,7 @@ export default function CopyButton({ text, variant = "surface", className = "" }
     }, [copied])
 
     return (
+        <>
         <button
             type="button"
             onClick={() => {
@@ -29,5 +30,10 @@ export default function CopyButton({ text, variant = "surface", className = "" }
         >
             {copied ? "COPIED" : "COPY"}
         </button>
+        {/* The button's own label stays "Copy …", so announce success separately */}
+        <span role="status" className="sr-only">
+            {copied ? "Email address copied" : ""}
+        </span>
+        </>
     )
 }

@@ -16,7 +16,8 @@ export default function DarkButton({ theme, setTheme }: Props) {
         setTheme((current) => (current === "light" ? "dark" : "light"));
       }}
       aria-pressed={dark}
-      aria-label={`Switch to ${dark ? "light" : "dark"} mode`}
+      // Fixed name + pressed state; a label that flips too would contradict it
+      aria-label="Dark mode"
       className="
                 group relative overflow-hidden
                 flex flex-col items-center justify-center gap-2
@@ -45,10 +46,11 @@ export default function DarkButton({ theme, setTheme }: Props) {
       />
 
       <div
+        aria-hidden="true"
         className={`w-10 h-10 rounded-full ${dark ? "bg-black" : "bg-yellow-300"}`}
       />
 
-      <span className="relative hidden md:block text-xs font-bold tracking-widest">
+      <span aria-hidden="true" className="relative hidden md:block text-xs font-bold tracking-widest">
         {dark ? "DARK" : "LIGHT"}
       </span>
     </button>

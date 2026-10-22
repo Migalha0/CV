@@ -1,3 +1,4 @@
+import Icon from "./Icon";
 import LinkButton from "./LinkButton"
 
 export default function Footer() {
@@ -7,7 +8,7 @@ export default function Footer() {
                 Built from scratch with React, Tailwind CSS &amp; WebGL shaders.
             </span>
             <LinkButton href="https://github.com/Migalha0/CV">
-                SOURCE ↗
+                SOURCE <Icon name="external" />
             </LinkButton>
         </footer>
     )
