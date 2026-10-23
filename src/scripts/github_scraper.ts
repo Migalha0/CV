@@ -27,5 +27,8 @@ export async function getRepos(): Promise<Repository[]> {
     // Caching is best effort
   }
 
+  // console.log(repos);
   return repos;
 }
+
+// getRepos();

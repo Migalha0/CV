@@ -230,8 +230,7 @@ export default function FireDither({
           let from = c + (s & 1) - ((s >>> 1) & 1);
           if (from < 0) from = 0;
           else if (from > edge) from = edge;
-          const value =
-            fire[previous + from * acrossStep] - (s >>> 8) * scale;
+          const value = fire[previous + from * acrossStep] - (s >>> 8) * scale;
           if (value > 0) {
             fire[row + c * acrossStep] = value;
             burning = true;

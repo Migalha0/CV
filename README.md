@@ -1,6 +1,6 @@
 # Gabriel Magalhães Barros — Portfolio
 
-**Live:** https://cv-eight-pi.vercel.app
+**Live:** https://www.gmagellan.dev/
 
 My CV and portfolio as a single-page site, built from scratch with React, TypeScript, Tailwind CSS and hand-written WebGL. The design is deliberately sharp and "pixel perfect": hard offset shadows, 2px dithered patterns and clipped corners. There is no UI library.
 

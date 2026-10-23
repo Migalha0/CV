@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import Grid from "./Grid";
 import Card from "./Card";
 
-import { excluded_repos, featured_repos, personal_info } from "../data/manual_data";
+import {
+  excluded_repos,
+  featured_repos,
+  personal_info,
+} from "../data/manual_data";
 import { getRepos } from "../scripts/github_scraper";
 import { extractTags } from "../scripts/parse_tags";
 
@@ -19,7 +23,9 @@ function sortRepos(repos: Repository[]): Repository[] {
 
   return repos
     .filter((repo) => !repo.fork && !excluded_repos.includes(repo.name))
-    .sort((a, b) => rank(a) - rank(b) || b.pushed_at.localeCompare(a.pushed_at));
+    .sort(
+      (a, b) => rank(a) - rank(b) || b.pushed_at.localeCompare(a.pushed_at),
+    );
 }
 
 // "UK_Crime_Map" -> "UK Crime Map"
@@ -81,7 +87,9 @@ export default function SectionProject() {
   if (loading) {
     return (
       <Grid id="projects" title="PROJECTS" busy>
-        <span role="status" className="sr-only">Loading projects…</span>
+        <span role="status" className="sr-only">
+          Loading projects…
+        </span>
         <SkeletonCard />
         <SkeletonCard />
         <SkeletonCard />
@@ -94,7 +102,12 @@ export default function SectionProject() {
       <Grid id="projects" title="PROJECTS">
         <div className="flex flex-col gap-2 items-start text-left border-2 border-border p-3 bg-surface shadow-hard">
           <span className="font-bold">{error}</span>
-          <a href={personal_info.github} target="_blank" rel="noopener noreferrer" className="underline">
+          <a
+            href={personal_info.github}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline"
+          >
             See my projects directly on GitHub <Icon name="external" />
             <span className="sr-only"> (opens in a new tab)</span>
           </a>

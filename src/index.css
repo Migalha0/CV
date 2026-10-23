@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
 @import "tailwindcss";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
-  --font-poppins: 'Poppins', sans-serif;
+  --font-poppins: "Poppins", sans-serif;
 }
 
 /* Light scheme */
@@ -64,7 +64,10 @@
 
 /* Pixel patterns, tinted through the --dots / --dither-a / --dither-b variables */
 @utility bg-dots {
-  background-image: radial-gradient(var(--dots, var(--theme-pattern)) 1px, transparent 1px);
+  background-image: radial-gradient(
+    var(--dots, var(--theme-pattern)) 1px,
+    transparent 1px
+  );
   background-size: 7px 7px;
 }
 
@@ -97,8 +100,12 @@
 
 /* Quarter turn in visible steps, used when the theme icon swaps */
 @keyframes pixel-spin {
-  from { rotate: -90deg; }
-  to { rotate: 0deg; }
+  from {
+    rotate: -90deg;
+  }
+  to {
+    rotate: 0deg;
+  }
 }
 
 /* Global styles */
