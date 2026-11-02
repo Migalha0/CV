@@ -22,7 +22,8 @@ interface Props {
 }
 
 const OWNER = "Migalha0";
-const BRANCH = "master";
+// HEAD resolves to each repo's default branch, whether it's main or master
+const REF = "HEAD";
 const EXTENSIONS = [".jpg", ".png", ".jpeg", ".webp", ".gif"];
 // Screens with no hover, where the preview is simply shown open
 const NO_HOVER_QUERY = "(hover: none)";
@@ -51,7 +52,7 @@ export default function Card({
   const previewId = useId();
 
   const imageUrl = repo
-    ? `https://raw.githubusercontent.com/${OWNER}/${repo}/refs/heads/${BRANCH}/preview${EXTENSIONS[extensionIndex]}`
+    ? `https://raw.githubusercontent.com/${OWNER}/${repo}/${REF}/preview${EXTENSIONS[extensionIndex]}`
     : null;
 
   useEffect(() => {
