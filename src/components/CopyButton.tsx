@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { buttonClasses, type ButtonVariant } from "../scripts/button_classes"
+import Icon from "./Icon"
 
 interface Props {
     text: string
@@ -28,7 +29,7 @@ export default function CopyButton({ text, variant = "surface", className = "" }
             title={`Copy ${text}`}
             className={`${buttonClasses(variant)} ${copied ? "bg-ink! text-brand-yellow!" : ""} ${className}`}
         >
-            {copied ? "COPIED" : "COPY"}
+            {copied ? <>COPIED <Icon name="check" /></> : <>COPY <Icon name="copy" /></>}
         </button>
         {/* The button's own label stays "Copy …", so announce success separately */}
         <span role="status" className="sr-only">

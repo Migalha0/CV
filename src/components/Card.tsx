@@ -114,7 +114,7 @@ export default function Card({
                 p-3 pb-4
             `}
     >
-      <Title as="h3" url={url} id={`${previewId}-title`}>
+      <Title as="h3" id={`${previewId}-title`}>
         {title_string}
       </Title>
 
@@ -122,11 +122,18 @@ export default function Card({
         <p className="text-left text-sm font-semibold text-text mx-2">{meta}</p>
       )}
 
-      {homepage && (
+      {(homepage || url) && (
         <div className="flex flex-wrap items-center gap-2 mx-2">
-          <LinkButton href={homepage}>
-            LIVE DEMO <Icon name="external" />
-          </LinkButton>
+          {homepage && (
+            <LinkButton href={homepage}>
+              LIVE DEMO <Icon name="external" />
+            </LinkButton>
+          )}
+          {url && (
+            <LinkButton href={url} label={`${title_string} on GitHub`}>
+              <Icon name="github" /> GITHUB <Icon name="external" />
+            </LinkButton>
+          )}
         </div>
       )}
 

@@ -107,7 +107,7 @@ function App() {
                     href={`mailto:${personal_info.email}`}
                     title={personal_info.email}
                   >
-                    EMAIL
+                    EMAIL <Icon name="mail" />
                   </LinkButton>
                   <CopyButton
                     variant="brand"
@@ -116,10 +116,10 @@ function App() {
                   />
                 </span>
                 <LinkButton variant="brand" href={personal_info.github}>
-                  GITHUB <Icon name="external" />
+                  <Icon name="github" /> GITHUB <Icon name="external" />
                 </LinkButton>
                 <LinkButton variant="brand" href={personal_info.linkedin}>
-                  LINKEDIN <Icon name="external" />
+                  <Icon name="linkedin" /> LINKEDIN <Icon name="external" />
                 </LinkButton>
                 <LinkButton
                   variant="brand"
