@@ -43,15 +43,21 @@ function compile(gl: WebGLRenderingContext, type: number, source: string) {
   return shader;
 }
 
+// Extra device pixels drawn below the visible frame, in case the card grows
+// a little between reading its height and the frame being shown
+const SCISSOR_MARGIN = 64;
+
 export default function ShaderFrame({ children }: Props) {
+  const frameRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
+    const frameBox = frameRef.current;
     const canvas = canvasRef.current;
     const gl = canvas?.getContext("webgl");
 
     // No WebGL: the canvas' CSS gradient (shader palette) stays as a static frame
-    if (!canvas || !gl) {
+    if (!frameBox || !canvas || !gl) {
       console.warn("ShaderFrame: WebGL unavailable, using plain frame");
       return;
     }
@@ -92,7 +98,22 @@ export default function ShaderFrame({ children }: Props) {
     let frame = 0;
     let visible = false;
 
-    const draw = () => {
+    // The canvas is taller than the card, so the animated loop only shades
+    // the strip the card currently shows. GL's origin is the bottom left and
+    // the canvas is pinned to the top, so that strip is the top of the canvas
+    const draw = (full: boolean) => {
+      if (full) {
+        gl.disable(gl.SCISSOR_TEST);
+      } else {
+        const ratio = window.devicePixelRatio || 1;
+        const shown = Math.min(
+          canvas.height,
+          Math.ceil(frameBox.clientHeight * ratio) + SCISSOR_MARGIN,
+        );
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(0, canvas.height - shown, canvas.width, shown);
+      }
+
       gl.viewport(0, 0, canvas.width, canvas.height);
       gl.uniform1f(iTime, (performance.now() - start) / 1000);
       gl.uniform2f(iResolution, canvas.width, canvas.height);
@@ -101,7 +122,7 @@ export default function ShaderFrame({ children }: Props) {
     };
 
     const loop = () => {
-      draw();
+      draw(false);
       frame = requestAnimationFrame(loop);
     };
 
@@ -110,12 +131,15 @@ export default function ShaderFrame({ children }: Props) {
       canvas.width = Math.round(canvas.clientWidth * ratio);
       canvas.height = Math.round(canvas.clientHeight * ratio);
 
-      // Resizing clears the canvas, so redraw when the loop isn't running
-      if (reducedMotion || !visible) draw();
+      // Resizing clears the canvas, so redraw straight away. Only the width
+      // follows the card, so this runs on layout changes, not on the card
+      // opening. Drawn in full, since with reduced motion it's the only draw
+      draw(true);
     });
     resizeObserver.observe(canvas);
 
-    // Only animate while the card is on screen
+    // Only animate while the card is on screen. The canvas runs past the
+    // card, so watch the frame, which is the card's size
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
       cancelAnimationFrame(frame);
@@ -124,7 +148,7 @@ export default function ShaderFrame({ children }: Props) {
         loop();
       }
     });
-    intersectionObserver.observe(canvas);
+    intersectionObserver.observe(frameBox);
 
     return () => {
       cancelAnimationFrame(frame);
@@ -137,14 +161,24 @@ export default function ShaderFrame({ children }: Props) {
     };
   }, []);
 
+  // The canvas keeps a fixed size, at least as tall as the screen, and the
+  // frame around it follows the card and crops it. Sized to the card instead,
+  // the canvas would be cleared and the pattern (scaled to the canvas size)
+  // stretched on every frame of the preview opening
   return (
     <div className="relative w-full h-fit">
-      <canvas
-        ref={canvasRef}
+      <div
+        ref={frameRef}
         aria-hidden="true"
-        className="absolute top-0 left-0 w-[calc(100%+12px)] h-[calc(100%+12px)]"
-        style={{ clipPath: CLIP_PATH, background: FALLBACK }}
-      />
+        className="absolute top-0 left-0 w-[calc(100%+12px)] h-[calc(100%+12px)] overflow-hidden"
+        style={{ clipPath: CLIP_PATH }}
+      >
+        <canvas
+          ref={canvasRef}
+          className="absolute top-0 left-0 w-full h-[max(100lvh,100%)]"
+          style={{ background: FALLBACK }}
+        />
+      </div>
       <div className="relative">{children}</div>
     </div>
   );
