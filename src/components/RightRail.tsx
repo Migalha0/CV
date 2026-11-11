@@ -1,16 +1,18 @@
 import Icon from "./Icon";
 import { useEffect, useRef, useState } from "react";
 import Title from "./Title";
+import { useLanguage } from "../i18n/LanguageContext";
 
 // Must match the ids passed to each section's Grid
 const SECTIONS = [
-  { id: "about", label: "ABOUT ME" },
-  { id: "experience", label: "EXPERIENCE" },
-  { id: "projects", label: "PROJECTS" },
-];
+  { id: "about", label: "aboutNav" },
+  { id: "experience", label: "experienceNav" },
+  { id: "projects", label: "projectsNav" },
+] as const;
 
 export default function RightRail() {
-  const [active, setActive] = useState(SECTIONS[0].id);
+  const { t } = useLanguage();
+  const [active, setActive] = useState<string>(SECTIONS[0].id);
   // Set by a nav click and held until the visitor scrolls on their own, so the
   // smooth scroll (and short sections near the target) can't override the choice
   const lockedRef = useRef(false);
@@ -33,7 +35,7 @@ export default function RightRail() {
           : 0;
       const line = window.innerHeight * (0.3 + 0.7 * progress);
 
-      let current = SECTIONS[0].id;
+      let current: string = SECTIONS[0].id;
       for (const { id } of SECTIONS) {
         const section = document.getElementById(id);
         if (section && section.getBoundingClientRect().top <= line) {
@@ -85,12 +87,12 @@ export default function RightRail() {
 
   return (
     <aside
-      aria-label="Page navigation and availability"
-      className="hidden 2xl:flex flex-col gap-8 sticky top-4 self-start w-56 shrink-0 border-l-2 dotted-l pl-6 text-left text-text"
+      aria-label={t.rail.navLabel}
+      className="hidden 2xl:flex flex-col gap-8 sticky top-4 self-start w-52 shrink-0 text-left text-text"
     >
-      <nav aria-label="On this page" className="flex flex-col gap-2">
-        <Title as="h2">ON THIS PAGE</Title>
-        <ul className="flex flex-col gap-1 pl- pt-2">
+      <nav aria-label={t.rail.navLabel} className="flex flex-col gap-2">
+        <Title as="h2">{t.rail.navTitle}</Title>
+        <ul className="flex flex-col gap-1 pt-1">
           {SECTIONS.map(({ id, label }) => (
             <li key={id}>
               <a
@@ -100,7 +102,7 @@ export default function RightRail() {
                 className={`
                   flex items-center gap-2 px-1.5 py-0.5
                   focus-visible:outline-offset-0
-                  text-sm font-bold
+                  text-[13px] font-bold uppercase
                   border-2
                   ${
                     active === id
@@ -113,31 +115,13 @@ export default function RightRail() {
                   name="pointer"
                   className={active === id ? "" : "invisible"}
                 />
-                {label}
+                {t.sections[label]}
               </a>
             </li>
           ))}
         </ul>
       </nav>
 
-      <div className="flex flex-col border-3 border-border bg-surface shadow-[6px_6px_0_0_var(--theme-shadow)]">
-        <div className="relative px-2 py-1 bg-brand-yellow border-b-3 border-border text-ink font-bold">
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-dither [--dither-a:var(--brand-yellow)] [--dither-b:var(--brand-grey)] [mask-image:linear-gradient(90deg,#0000_40%,#000_160%)]"
-          />
-          <h2 className="relative flex items-center gap-2">
-            <span
-              aria-hidden="true"
-              className="w-2.5 h-2.5 rounded-full bg-ink"
-            />
-            OPEN TO WORK
-          </h2>
-        </div>
-        <div className="flex flex-col gap-3 p-3 text-sm">
-          <p>Onsite · Hybrid · Remote</p>
-        </div>
-      </div>
     </aside>
   );
 }

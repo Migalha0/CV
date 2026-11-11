@@ -1,10 +1,10 @@
 import Icon from "./Icon";
 import { useEffect, useId, useState, type ReactNode } from "react";
-import Title from "./Title";
 import Chip from "./Chip";
 import LinkButton from "./LinkButton";
 import ShaderFrame from "./ShaderFrame";
 import { hasTag } from "../scripts/parse_tags";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface Props {
   url?: string;
@@ -13,8 +13,10 @@ interface Props {
   homepage?: string | null;
   language?: string | null;
   title_string: string;
-  // Short line under the title, e.g. company and period
+  // Short line under the title, e.g. the company
   meta?: ReactNode;
+  // Right-aligned beside the title on wider cards, e.g. a job's dates
+  aside?: ReactNode;
   description: string | ReactNode;
   // Plain chips (e.g. a job's stack); tags get a "#" prefix
   chips?: string[];
@@ -25,8 +27,42 @@ const OWNER = "Migalha0";
 // HEAD resolves to each repo's default branch, whether it's main or master
 const REF = "HEAD";
 const EXTENSIONS = [".jpg", ".png", ".jpeg", ".webp", ".gif"];
-// Screens with no hover, where the preview is simply shown open
-const NO_HOVER_QUERY = "(hover: none)";
+
+// Finds the repo's preview image by trying each extension in turn; null
+// until one loads, and stays null when the repo has none
+function usePreviewImage(repo?: string) {
+  const [extensionIndex, setExtensionIndex] = useState(0);
+  const [found, setFound] = useState<string | null>(null);
+
+  const candidate = repo
+    ? `https://raw.githubusercontent.com/${OWNER}/${repo}/${REF}/preview${EXTENSIONS[extensionIndex]}`
+    : null;
+
+  useEffect(() => {
+    if (!candidate) return;
+
+    let cancelled = false;
+    const image = new Image();
+
+    image.onload = () => {
+      if (!cancelled) setFound(candidate);
+    };
+    image.onerror = () => {
+      if (!cancelled && extensionIndex < EXTENSIONS.length - 1) {
+        setExtensionIndex((index) => index + 1);
+      }
+    };
+    image.src = candidate;
+
+    return () => {
+      cancelled = true;
+      image.onload = null;
+      image.onerror = null;
+    };
+  }, [candidate, extensionIndex]);
+
+  return found;
+}
 
 export default function Card({
   url,
@@ -35,178 +71,92 @@ export default function Card({
   language,
   title_string,
   meta,
+  aside,
   description,
   chips = [],
   tags = [],
 }: Props) {
-  // The preview opens while the mouse is over the card or focus is inside
-  // it, so nothing needs a click; touch screens can't hover and always show it
-  const [hover, setHover] = useState(false);
-  const [focused, setFocused] = useState(false);
-  const [noHover, setNoHover] = useState(
-    () => window.matchMedia(NO_HOVER_QUERY).matches,
-  );
-  const open = hover || focused || noHover;
-  const [extensionIndex, setExtensionIndex] = useState(0);
-  const [imagePreview, setImagePreview] = useState(false);
-  const previewId = useId();
+  const { t } = useLanguage();
+  const titleId = useId();
+  const image = usePreviewImage(repo);
 
-  const imageUrl = repo
-    ? `https://raw.githubusercontent.com/${OWNER}/${repo}/${REF}/preview${EXTENSIONS[extensionIndex]}`
-    : null;
-
-  useEffect(() => {
-    if (!imageUrl) return;
-
-    let cancelled = false;
-
-    const image = new Image();
-
-    image.onload = () => {
-      if (!cancelled) {
-        setImagePreview(true);
-      }
-    };
-
-    image.onerror = () => {
-      if (cancelled) return;
-
-      if (extensionIndex < EXTENSIONS.length - 1) {
-        setExtensionIndex((index) => index + 1);
-      }
-    };
-
-    image.src = imageUrl;
-
-    return () => {
-      cancelled = true;
-      image.onload = null;
-      image.onerror = null;
-    };
-  }, [imageUrl, extensionIndex]);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia(NO_HOVER_QUERY);
-    const update = () => setNoHover(mediaQuery.matches);
-    mediaQuery.addEventListener("change", update);
-    return () => mediaQuery.removeEventListener("change", update);
-  }, []);
-
-  // #AI cards show the shader through a transparent border instead of a solid frame
+  // #AI cards show the shader through a transparent border and as their shadow
   const isAI = hasTag(tags, "AI");
+  // A per-card offset, so the #AI glints across the page don't fire together
+  const glareDelay =
+    ([...title_string].reduce((sum, char) => sum + char.charCodeAt(0), 0) % 40) / 10;
   const allChips = [...(language ? [language] : []), ...chips];
+  const hasActions = Boolean(homepage || url);
 
   const card = (
     <article
-      aria-labelledby={`${previewId}-title`}
-      onPointerEnter={(e) => e.pointerType === "mouse" && setHover(true)}
-      onPointerLeave={() => setHover(false)}
-      onFocus={() => setFocused(true)}
-      onBlur={(e) => {
-        if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false);
-      }}
+      aria-labelledby={titleId}
       className={`
-                font-poppins flex flex-col gap-2
-                w-full h-fit
-                bg-surface
-                border-3 border-solid
-                ${isAI ? "border-transparent bg-clip-padding" : "border-border shadow-hard"}
-                p-3 pb-4
-            `}
+        flex flex-col h-full
+        bg-surface text-text text-left
+        border-2
+        ${isAI ? "border-transparent bg-clip-padding" : "border-border shadow-hard"}
+      `}
     >
-      <Title as="h3" id={`${previewId}-title`}>
-        {title_string}
-      </Title>
-
-      {meta && (
-        <p className="text-left text-sm font-semibold text-text mx-2">{meta}</p>
+      {image && (
+        <img
+          src={image}
+          alt={t.card.screenshotOf(title_string)}
+          loading="lazy"
+          className="block w-full aspect-video object-cover object-top border-b-2 border-border"
+        />
       )}
 
-      {(homepage || url) && (
-        <div className="flex flex-wrap items-center gap-2 mx-2">
-          {homepage && (
-            <LinkButton href={homepage}>
-              LIVE DEMO <Icon name="external" />
-            </LinkButton>
-          )}
-          {url && (
-            <LinkButton href={url} label={`${title_string} on GitHub`}>
-              <Icon name="github" /> GITHUB <Icon name="external" />
-            </LinkButton>
-          )}
-        </div>
-      )}
-
-      <div className="text-text text-left text-sm mx-2">{description}</div>
-
-      {/* One frame holds both the hover hint and the screenshot. Opening,
-          the hint folds shut until the frame is a single line, then the
-          screenshot unfolds from that line; closing runs the same in reverse.
-          The delays chain the two halves in whichever order applies */}
-      {imagePreview && (
-        <div
-          className={`
-                        w-full border-2 border-border border-solid
-                    `}
-        >
-          {/* Hint that the card has a screenshot to hover for; not a control */}
-          <div
-            aria-hidden="true"
-            className={`
-                        grid
-                        ${open ? "grid-rows-[0fr] delay-0" : "grid-rows-[1fr] delay-450"}
-                        transition-[grid-template-rows]
-                        duration-200 ease-in-out
-                    `}
-          >
-            <div className="overflow-hidden">
-              <div className="flex items-center justify-center gap-2 py-1 text-text text-xs font-bold tracking-widest">
-                <Icon name="eye" size={16} />
-                HOVER TO PREVIEW
-              </div>
-            </div>
+      <div className="flex flex-col gap-3 flex-1 p-4">
+        <header className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+          <div className="flex flex-col gap-0.5">
+            <h3 id={titleId} className="text-[17px] font-bold leading-snug">
+              {title_string}
+            </h3>
+            {meta && <p className="text-[13px] font-semibold text-text-2">{meta}</p>}
           </div>
+          {aside && <p className="font-mono text-[13px] text-text-2 whitespace-nowrap">{aside}</p>}
+        </header>
 
-          <div
-            className={`
-                        grid items-start overflow-hidden
-                        ${open ? "grid-rows-[1fr] delay-200" : "grid-rows-[0fr] delay-0"}
-                        transition-[grid-template-rows]
-                        duration-450 ease-in-out
-                    `}
-          >
-            {/* inert while collapsed, so the hidden image isn't read out */}
-            <div className="overflow-hidden" inert={!open}>
-              <img
-                src={imageUrl!}
-                alt={`Screenshot of ${title_string}`}
-                loading="lazy"
-                className="w-full h-auto"
-              />
-            </div>
+        {description && <div className="text-sm leading-relaxed">{description}</div>}
+
+        {(allChips.length > 0 || tags.length > 0) && (
+          <ul className="flex flex-wrap gap-1.5" aria-label={t.card.technologies}>
+            {allChips.map((chip) => (
+              <li key={chip}>
+                <Chip>{chip}</Chip>
+              </li>
+            ))}
+            {tags.map((tag) => (
+              <li key={tag}>
+                <Chip
+                  prefix="#"
+                  highlight={hasTag([tag], "AI")}
+                  glareDelay={glareDelay}
+                >
+                  {tag}
+                </Chip>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Pinned to the bottom, so actions line up across a row of cards */}
+        {hasActions && (
+          <div className="flex flex-wrap items-center gap-2 mt-auto pt-2">
+            {homepage && (
+              <LinkButton href={homepage}>
+                {t.card.liveDemo} <Icon name="external" />
+              </LinkButton>
+            )}
+            {url && (
+              <LinkButton href={url} label={t.card.onGithub(title_string)}>
+                <Icon name="github" /> {t.contact.github} <Icon name="external" />
+              </LinkButton>
+            )}
           </div>
-        </div>
-      )}
-
-      {(allChips.length > 0 || tags.length > 0) && (
-        <ul
-          className="flex flex-wrap gap-1.5 mx-2"
-          aria-label="Technologies and topics"
-        >
-          {allChips.map((chip) => (
-            <li key={chip}>
-              <Chip size="sm">{chip}</Chip>
-            </li>
-          ))}
-          {tags.map((tag) => (
-            <li key={tag}>
-              <Chip size="sm" prefix="#">
-                {tag}
-              </Chip>
-            </li>
-          ))}
-        </ul>
-      )}
+        )}
+      </div>
     </article>
   );
 

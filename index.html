@@ -32,6 +32,20 @@
 
     <!-- Apply the theme before first paint so dark mode doesn't flash light -->
     <script>
+      // Match <html lang> to the language React will pick (saved choice,
+      // else the first supported browser language) before first paint
+      try {
+        var lang = localStorage.getItem("lang");
+        if (lang !== "en" && lang !== "pt") {
+          lang = "en";
+          var prefs = navigator.languages || [navigator.language];
+          for (var i = 0; i < prefs.length; i++) {
+            var base = String(prefs[i]).toLowerCase().split("-")[0];
+            if (base === "en" || base === "pt") { lang = base; break; }
+          }
+        }
+        document.documentElement.lang = lang === "pt" ? "pt-BR" : "en-US";
+      } catch (e) {}
       try {
         var saved = localStorage.getItem("theme");
         var dark = saved

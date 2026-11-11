@@ -14,6 +14,14 @@ const PATHS = {
   pointer: <path d="M4 2l9 6-9 6z" fill="currentColor" />,
   mail: <path d="M2 4h12v9H2zM2 4l6 5 6-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="miter" />,
   copy: <path d="M5 5h8v9H5zM3 11V2h8" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square" />,
+  // Pixel sun and crescent for the theme toggle
+  sun: (
+    <>
+      <rect x="5" y="5" width="6" height="6" fill="currentColor" />
+      <path d="M8 0v3M8 13v3M0 8h3M13 8h3M2.5 2.5l2 2M11.5 11.5l2 2M13.5 2.5l-2 2M4.5 11.5l-2 2" fill="none" stroke="currentColor" strokeWidth="1.8" />
+    </>
+  ),
+  moon: <path d="M10 1.5A6.5 6.5 0 1 0 14.5 11 5.5 5.5 0 0 1 10 1.5z" fill="currentColor" />,
   check: <path d="M3 8l3.5 3.5L13 4" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="square" />,
   // GitHub's mark (Octicons mark-github, 16 px)
   github: (

@@ -8,7 +8,7 @@ interface Props {
 }
 
 // Must match the offset of --shadow-hard in index.css
-const SHADOW = 12;
+const SHADOW = 6;
 
 // Union of the card box and its offset shadow box, so the shader only shows
 // through the (transparent) card border and the hard-shadow L-shape
@@ -97,14 +97,18 @@ export default function ShaderFrame({ children }: Props) {
   // The canvas keeps a fixed size, at least as tall as the screen, and the
   // frame around it follows the card and crops it. Sized to the card instead,
   // the canvas would be cleared and the pattern (scaled to the canvas size)
-  // stretched on every frame of the preview opening
+  // stretched whenever the card's height changes
   return (
-    <div className="relative w-full h-fit">
+    <div className="relative w-full h-full">
       <div
         ref={frameRef}
         aria-hidden="true"
-        className="absolute top-0 left-0 w-[calc(100%+12px)] h-[calc(100%+12px)] overflow-hidden"
-        style={{ clipPath: CLIP_PATH }}
+        className="absolute top-0 left-0 overflow-hidden"
+        style={{
+          clipPath: CLIP_PATH,
+          width: `calc(100% + ${SHADOW}px)`,
+          height: `calc(100% + ${SHADOW}px)`,
+        }}
       >
         <canvas
           ref={canvasRef}
@@ -119,7 +123,7 @@ export default function ShaderFrame({ children }: Props) {
           }}
         />
       </div>
-      <div className="relative">{children}</div>
+      <div className="relative h-full">{children}</div>
     </div>
   );
 }

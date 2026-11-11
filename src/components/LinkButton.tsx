@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { buttonClasses, type ButtonVariant } from "../scripts/button_classes";
+import { useLanguage } from "../i18n/LanguageContext";
 
 interface Props {
   href: string;
@@ -7,18 +8,21 @@ interface Props {
   download?: boolean;
   title?: string;
   label?: string;
+  className?: string;
   children: ReactNode;
 }
 
 export default function LinkButton({
   href,
-  variant = "surface",
+  variant = "primary",
   download = false,
   title,
   label,
+  className = "",
   children,
 }: Props) {
   const external = href.startsWith("http");
+  const { t } = useLanguage();
 
   return (
     <a
@@ -28,10 +32,10 @@ export default function LinkButton({
       rel={external ? "noopener noreferrer" : undefined}
       title={title}
       aria-label={label}
-      className={buttonClasses(variant)}
+      className={`${buttonClasses(variant)} ${className}`}
     >
       {children}
-      {external && <span className="sr-only"> (opens in a new tab)</span>}
+      {external && <span className="sr-only">{t.opensInNewTab}</span>}
     </a>
   );
 }

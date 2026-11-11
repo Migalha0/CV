@@ -1,12 +1,13 @@
 // The swirling paint of the balatro shader (original by localthunk,
-// https://www.playbalatro.com): a warp loop and a three-colour palette.
+// https://www.playbalatro.com): a warp loop and a three-colour palette,
+// recoloured to the site's yellow, grey and ink.
 // Shared so every shader on the page paints with the same look, and differs
 // only in how it moves the paint around
 
 export const paintGLSL = `
 #define COLOUR_1 vec4(1., 1., 0., 1.0)
-#define COLOUR_2 vec4(0.0, 0.42, 0.706, 1.0)
-#define COLOUR_3 vec4(0.086, 0.137, 0.145, 1.0)
+#define COLOUR_2 vec4(0.122, 0.129, 0.149, 1.0)
+#define COLOUR_3 vec4(0.078, 0.082, 0.094, 1.0)
 #define CONTRAST 3.5
 #define LIGTHING 0.4
 #define SPIN_AMOUNT 0.25
@@ -34,4 +35,4 @@ vec4 paint(vec2 uv, float speed) {
 
 // COLOUR_1..3 as a CSS gradient, shown where WebGL isn't available
 export const PAINT_FALLBACK =
-  "conic-gradient(from 45deg, #ffff00, #006bb4, #162325, #006bb4, #ffff00)";
+  "conic-gradient(from 45deg, #ffff00, #1f2126, #141518, #1f2126, #ffff00)";

@@ -1,23 +1,26 @@
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
-  size?: "sm" | "md";
   prefix?: string;
+  // Yellow chip with a glasses-glare glint, for tags worth noticing (#AI)
+  highlight?: boolean;
+  // Seconds before the first glint, so highlighted chips don't flash in sync
+  glareDelay?: number;
 }
 
-export default function Chip({ children, size = "md", prefix }: Props) {
+// One chip style for every list of skills, stacks and tags
+export default function Chip({ children, prefix, highlight = false, glareDelay = 0 }: Props) {
   return (
     <span
+      style={highlight ? ({ "--glare-delay": `${glareDelay}s` } as CSSProperties) : undefined}
       className={`
-        bg-dots
-        flex items-center justify-center
+        inline-flex items-center
         w-fit max-w-full
-        text-left
-        border-2 border-border
-        font-bold text-text
-        bg-chip
-        ${size === "sm" ? "px-1.5 py-0.5 text-xs" : "px-1.5 py-1"}
+        px-1.5 py-0.5
+        border-2
+        text-xs font-semibold text-left leading-snug
+        ${highlight ? "glare bg-brand-yellow border-ink text-ink font-bold" : "bg-track border-line text-text"}
       `}
     >
       {prefix}

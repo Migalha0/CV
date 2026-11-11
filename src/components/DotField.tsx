@@ -84,7 +84,7 @@ export default function DotField({ children }: Props) {
 
       const style = getComputedStyle(field);
       dotColor = style.getPropertyValue("--theme-grid-pattern").trim();
-      surfaceColor = style.getPropertyValue("--theme-surface").trim();
+      surfaceColor = style.getPropertyValue("--theme-background").trim();
       themeChanged = false;
 
       const tileCanvas = document.createElement("canvas");

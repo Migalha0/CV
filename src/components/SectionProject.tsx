@@ -11,6 +11,7 @@ import {
 } from "../data/manual_data";
 import { getRepos } from "../scripts/github_scraper";
 import { extractTags } from "../scripts/parse_tags";
+import { useLanguage } from "../i18n/LanguageContext";
 
 import type { Repository } from "../types/Repository";
 
@@ -38,15 +39,14 @@ function SkeletonCard() {
     <div
       aria-hidden="true"
       className="
-        flex flex-col gap-3 w-full h-48 p-3
-        bg-surface border-3 border-border shadow-hard
-        bg-dots
+        flex flex-col gap-3 w-full h-48 p-4
+        bg-surface border-2 border-border shadow-hard
         animate-pulse motion-reduce:animate-none
       "
     >
-      <div className="h-6 w-2/3 bg-border" />
-      <div className="h-3 w-full bg-chip" />
-      <div className="h-3 w-5/6 bg-chip" />
+      <div className="h-6 w-2/3 bg-track" />
+      <div className="h-3 w-full bg-track" />
+      <div className="h-3 w-5/6 bg-track" />
     </div>
   );
 }
@@ -54,7 +54,8 @@ function SkeletonCard() {
 export default function SectionProject() {
   const [repos, setRepos] = useState<Repository[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;
@@ -68,7 +69,7 @@ export default function SectionProject() {
         }
       } catch {
         if (!cancelled) {
-          setError("Unable to load repositories from GitHub.");
+          setError(true);
         }
       } finally {
         if (!cancelled) {
@@ -86,9 +87,9 @@ export default function SectionProject() {
 
   if (loading) {
     return (
-      <Grid id="projects" title="PROJECTS" busy>
+      <Grid id="projects" title={t.sections.projects} busy>
         <span role="status" className="sr-only">
-          Loading projects…
+          {t.projects.loading}
         </span>
         <SkeletonCard />
         <SkeletonCard />
@@ -99,17 +100,17 @@ export default function SectionProject() {
 
   if (error) {
     return (
-      <Grid id="projects" title="PROJECTS">
-        <div className="flex flex-col gap-2 items-start text-left border-2 border-border p-3 bg-surface shadow-hard">
-          <span className="font-bold">{error}</span>
+      <Grid id="projects" title={t.sections.projects}>
+        <div className="col-span-full flex flex-col gap-2 items-start text-left border-2 border-border p-4 bg-surface shadow-hard">
+          <span className="font-bold">{t.projects.error}</span>
           <a
             href={personal_info.github}
             target="_blank"
             rel="noopener noreferrer"
             className="underline"
           >
-            See my projects directly on GitHub <Icon name="external" />
-            <span className="sr-only"> (opens in a new tab)</span>
+            {t.projects.seeOnGithub} <Icon name="external" />
+            <span className="sr-only">{t.opensInNewTab}</span>
           </a>
         </div>
       </Grid>
@@ -117,7 +118,7 @@ export default function SectionProject() {
   }
 
   return (
-    <Grid id="projects" title="PROJECTS">
+    <Grid id="projects" title={t.sections.projects}>
       {repos.map((repo) => {
         const { text, tags } = extractTags(repo.description ?? "");
 

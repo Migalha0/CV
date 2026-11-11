@@ -1,31 +1,31 @@
-interface Props{
-    title: string,
-    currentLevel: number,
-    maxLevel:number
+import { useLanguage } from "../i18n/LanguageContext"
+
+interface Props {
+    title: string
+    currentLevel: number
+    maxLevel: number
 }
 
-export default function Level({
-    title,
-    maxLevel,
-    currentLevel
-}:Props) {
+// Name, a filled bar on a track, and the score, like the template's bar charts
+export default function Level({ title, maxLevel, currentLevel }: Props) {
+    const { t } = useLanguage()
 
-    const square = `border-2 border-border h-[32px] w-[17px]`
-    const filledStyle = `bg-dither [--dither-a:var(--theme-level-a)] [--dither-b:var(--theme-level-b)]`
-
-    return(
-        <div className="flex gap-2.5 items-center">
-            <div className="flex gap-0.5" role="img" aria-label={`${title}: ${currentLevel} of ${maxLevel}`}>
-
-                {Array.from({length: maxLevel}, (_,index) => {
-                    const filled = index < currentLevel
-                    return(
-                        <div key={index} className={`${filled?filledStyle:''} ${square}`}/>
-                    )
-                })}
-
-            </div>           
-            <div className="font-semibold">{title}</div>
+    return (
+        <div className="flex items-center gap-3">
+            <span className="flex-1 min-w-0 text-[15px]">{title}</span>
+            <span
+                role="img"
+                aria-label={t.level(title, currentLevel, maxLevel)}
+                className="w-24 h-2 bg-track shrink-0"
+            >
+                <span
+                    className="block h-full bg-text"
+                    style={{ width: `${(currentLevel / maxLevel) * 100}%` }}
+                />
+            </span>
+            <span aria-hidden="true" className="w-7 shrink-0 text-right font-mono text-[13px] text-text-2">
+                {currentLevel}/{maxLevel}
+            </span>
         </div>
     )
 }

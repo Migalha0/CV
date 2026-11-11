@@ -11,6 +11,8 @@ import Level from "./Level";
 import Title from "./Title";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import useSwipeDrawer from "../hooks/useSwipeDrawer";
+import { useLanguage } from "../i18n/LanguageContext";
+import { tr, type Text } from "../i18n/language";
 
 const MOBILE_QUERY = "(max-width: 767px)";
 
@@ -24,17 +26,19 @@ function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-3">
       <Title as="h2">{title}</Title>
-      <div className="pl-2">{children}</div>
+      <div>{children}</div>
     </section>
   );
 }
 
-function ChipList({ items }: { items: string[] }) {
+function ChipList({ items }: { items: Text[] }) {
+  const { lang } = useLanguage();
   return (
-    <div className="flex flex-wrap gap-2">
-      {items.map((item) => (
-        <Chip key={item}>{item}</Chip>
-      ))}
+    <div className="flex flex-wrap gap-1.5">
+      {items.map((item) => {
+        const label = tr(item, lang);
+        return <Chip key={label}>{label}</Chip>;
+      })}
     </div>
   );
 }
@@ -42,14 +46,15 @@ function ChipList({ items }: { items: string[] }) {
 function LevelList({
   items,
 }: {
-  items: { name: string; proficiency: number }[];
+  items: { name: Text; proficiency: number }[];
 }) {
+  const { lang } = useLanguage();
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2.5">
       {items.map((item) => (
         <Level
-          key={item.name}
-          title={item.name}
+          key={tr(item.name, lang)}
+          title={tr(item.name, lang)}
           currentLevel={item.proficiency}
           maxLevel={5}
         />
@@ -59,6 +64,7 @@ function LevelList({
 }
 
 export default function SideBar({ open, setOpen }: Props) {
+  const { lang, t } = useLanguage();
   const drawerRef = useRef<HTMLDivElement>(null);
   const backdropRef = useRef<HTMLDivElement>(null);
 
@@ -101,7 +107,7 @@ export default function SideBar({ open, setOpen }: Props) {
         onClick={() => setOpen(false)}
         className={`
                 md:hidden fixed inset-0 z-10
-                bg-dither [--dither-a:rgb(20_21_24/0.6)] [--dither-b:rgb(20_21_24/0.6)]
+                bg-ink/60
                 transition-[opacity,visibility] duration-200
                 ${open ? "opacity-100 visible" : "opacity-0 invisible"}
             `}
@@ -112,19 +118,19 @@ export default function SideBar({ open, setOpen }: Props) {
         className={`
             z-20
             flex
-            fixed
+            fixed top-0 left-0
             w-fit
             hide-scrollbar
 
             h-dvh
-            md:h-auto
+            md:self-start
 
             transition-transform
             duration-200
             ease-out
             ${open ? "translate-x-0" : "translate-x-[calc(-100%+40px)]"}
             md:translate-x-0
-            md:relative
+            md:sticky
 
             pointer-events-none
             md:pointer-events-auto
@@ -136,7 +142,7 @@ export default function SideBar({ open, setOpen }: Props) {
             skip the off-screen panel */}
         <aside
           id="sidebar"
-          aria-label="Skills and profile"
+          aria-label={t.sidebar.label}
           inert={drawerClosed}
           className={`md:w-80 xl:w-96 w-[90vw] h-full pointer-events-auto`}
         >
@@ -144,29 +150,29 @@ export default function SideBar({ open, setOpen }: Props) {
           <div
             tabIndex={0}
             className="
-            focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ink dark:focus-visible:outline-brand-yellow
-            flex flex-col gap-8
+            focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-text
+            flex flex-col gap-7
             w-full h-full overflow-y-auto
-            p-6 xl:p-8
-            bg-brand-yellow dark:bg-brand-grey
-            border-r-2 border-border dark:border-brand-yellow
+            p-5 xl:p-6
+            bg-surface
+            border-r-2 border-border
             text-text text-left
           "
           >
-            <Block title="CODING LANGUAGES">
+            <Block title={t.sidebar.codingLanguages}>
               <LevelList items={coding_languages} />
             </Block>
 
-            <Block title="LANGUAGES">
+            <Block title={t.sidebar.languages}>
               <LevelList items={human_languages} />
             </Block>
 
-            <Block title="TECHNICAL SKILLS">
+            <Block title={t.sidebar.technicalSkills}>
               <div className="flex flex-col gap-4">
                 {technical_skills.map((category) => (
-                  <div key={category.category} className="flex flex-col gap-2">
-                    <h3 className="text-sm font-semibold">
-                      {category.category}
+                  <div key={tr(category.category, lang)} className="flex flex-col gap-2">
+                    <h3 className="text-[13px] font-semibold text-text-2">
+                      {tr(category.category, lang)}
                     </h3>
                     <ChipList items={category.skills} />
                   </div>
@@ -174,13 +180,13 @@ export default function SideBar({ open, setOpen }: Props) {
               </div>
             </Block>
 
-            <Block title="NATIONALITIES">
+            <Block title={t.sidebar.nationalities}>
               <ChipList
                 items={nationalities.map((nationality) => nationality.name)}
               />
             </Block>
 
-            <Block title="INTERESTS">
+            <Block title={t.sidebar.interests}>
               <ChipList items={hobbies.map((hobby) => hobby.name)} />
             </Block>
           </div>
@@ -195,17 +201,16 @@ export default function SideBar({ open, setOpen }: Props) {
           aria-controls="sidebar"
           aria-expanded={open}
           className="
-            md:hidden self-start mt-4
+            md:hidden self-center
             pointer-events-auto
             flex flex-col items-center gap-2
             w-10 py-3
             bg-brand-yellow text-ink border-ink
-            dark:bg-brand-grey dark:text-brand-yellow dark:border-brand-yellow
             border-2 border-l-0
-            shadow-[3px_3px_0_0_var(--brand-ink)]
-            text-xs font-bold tracking-widest
+            shadow-hard-sm
+            text-[11px] font-bold uppercase tracking-[0.06em]
             hover:cursor-pointer
-            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-border
+            focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-text
           "
         >
           <Icon
@@ -213,9 +218,9 @@ export default function SideBar({ open, setOpen }: Props) {
             className={`transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           />
           <span className="[writing-mode:vertical-rl]">
-            {open ? "CLOSE" : "SKILLS"}
+            {open ? t.sidebar.close : t.sidebar.open}
           </span>
-          <span className="sr-only"> panel</span>
+          <span className="sr-only">{t.sidebar.panel}</span>
         </button>
       </div>
     </>

@@ -40,7 +40,10 @@ export default function useSwipeDrawer({ open, setOpen, drawerRef, backdropRef }
       const drawer = drawerRef.current;
       if (drawer) {
         drawer.style.transition = "none";
-        drawer.style.transform = `translateX(${position}px)`;
+        // Tailwind v4's translate-x-* classes use the `translate` property, so
+        // override that one; a transform would stack on the closed offset and
+        // push the drawer further off screen while opening
+        drawer.style.translate = `${position}px 0`;
       }
 
       const backdrop = backdropRef.current;
@@ -58,7 +61,7 @@ export default function useSwipeDrawer({ open, setOpen, drawerRef, backdropRef }
 
       for (const element of [drawerRef.current, backdropRef.current]) {
         element?.style.removeProperty("transition");
-        element?.style.removeProperty("transform");
+        element?.style.removeProperty("translate");
         element?.style.removeProperty("visibility");
         element?.style.removeProperty("opacity");
       }
